@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phoenixville Interactive Map</title>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    body {
+      background-color: #1e1e1e;
+      color: #e0e0e0;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .map-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      background-color: #5686f5;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+    }
+    .header h2 {
+      margin: 0;
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+    #phoenixville-map {
+      flex: 1;
+      width: 100%;
+    }
+    .map-controls {
+      background-color: #333;
+      padding: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+    .map-button {
+      background-color: #444;
+      border: none;
+      color: #e0e0e0;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .map-button:hover {
+      background-color: #5686f5;
+      color: white;
+    }
+    .map-button.active {
+      background-color: #5686f5;
+      color: white;
+    }
+    .info-panel {
+      padding: 15px;
+      max-height: 100px;
+      overflow-y: auto;
+      background-color: #333;
+      border-top: 1px solid #444;
+    }
+    .info-panel h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+    }
+    .info-panel p {
+      margin: 0 0 10px;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+    /* Custom markers */
+    .gov-marker {
+      background-color: #5686f5;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      text-align: center;
+    }
+    .emergency-marker {
+      background-color: #e74c3c;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      text-align: center;
+    }
+    .public-marker {
+      background-color: #27ae60;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      text-align: center;
+    }
+    /* Leaflet popup custom styling */
+    .leaflet-popup-content-wrapper {
+      background-color: #333;
+      color: #e0e0e0;
+      border-radius: 6px;
+    }
+    .leaflet-popup-tip {
+      background-color: #333;
+    }
+    .leaflet-popup-content {
+      margin: 12px;
+    }
+    .location-name {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .location-type {
+      font-size: 0.8rem;
+      color: #aaa;
+      text-transform: capitalize;
+    }
+    .location-details {
+      margin-top: 8px;
+      font-size: 0.9rem;
+    }
+    .custom-popup-content {
+      text-align: center;
+    }
+    /* Legend styles */
+    .legend {
+      background-color: rgba(51, 51, 51, 0.9);
+      padding: 10px;
+      border-radius: 4px;
+      color: #e0e0e0;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    }
+    .legend h4 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+      border-radius: 3px;
+    }
+    .legend-label {
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="map-container">
+    <div class="header">
+      <h2>Phoenixville Borough Interactive Map</h2>
+    </div>
+    
+    <div id="phoenixville-map"></div>
+    
+    <div class="map-controls">
+      <button class="map-button" data-layer="locations">Municipal Locations</button>
+      <button class="map-button" data-layer="zoning">Zoning Districts</button>
+      <button class="map-button" data-layer="utilities">Utility Services</button>
+      <button class="map-button" data-layer="permits">Recent Permits</button>
+    </div>
+    
+    <div class="info-panel">
+      <h3>Map Information</h3>
+      <p id="layer-info">Select a map layer above to view different information about Phoenixville Borough.</p>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Get URL parameters to control the initial map view
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialLat = parseFloat(urlParams.get('lat')) || 40.1308;
+    const initialLng = parseFloat(urlParams.get('lng')) || -75.5146;
+    const initialZoom = parseInt(urlParams.get('zoom')) || 14;
+    const initialLayer = urlParams.get('layer') || 'locations';
+    
+    // Initialize the map centered on Phoenixville Borough or the specified coordinates
+    const map = L.map('phoenixville-map').setView([initialLat, initialLng], initialZoom);
+    
+    // Add OpenStreetMap tile layer with dark mode styling
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 19
+    }).addTo(map);
+    
+    // Create layer groups for different categories
+    const locationsLayer = L.layerGroup();
+    const zoningLayer = L.layerGroup();
+    const utilitiesLayer = L.layerGroup();
+    const permitsLayer = L.layerGroup();
+    
+    // Data for municipal locations
+    const locations = [
+      {name: "Borough Hall", lat: 40.1308, lng: -75.5146, type: "government", details: "The center of municipal operations, houses administrative offices."},
+      {name: "Police Department", lat: 40.1307, lng: -75.5131, type: "emergency", details: "Open 24/7 providing emergency services."},
+      {name: "Fire Department", lat: 40.1309, lng: -75.5135, type: "emergency", details: "Station 2 - Providing fire protection and emergency services."},
+      {name: "Public Library", lat: 40.1306, lng: -75.5172, type: "public", details: "Books, programs, and community resources available."},
+      {name: "Reeves Park", lat: 40.1337, lng: -75.5171, type: "public", details: "Large community park with sports facilities, playgrounds, and open space."},
+      {name: "Black Rock Sanctuary", lat: 40.1463, lng: -75.5392, type: "public", details: "Natural preserve with hiking trails and bird watching."},
+      {name: "Public Works", lat: 40.1284, lng: -75.5155, type: "government", details: "Responsible for maintaining roads, infrastructure, and public spaces."},
+      {name: "Community Development", lat: 40.1312, lng: -75.5149, type: "government", details: "Planning, zoning, and building permits department."}
+    ];
+    
+    // Create custom icon function by type
+    function createCustomIcon(type) {
+      let className = 'gov-marker';
+      if (type === 'emergency') className = 'emergency-marker';
+      if (type === 'public') className = 'public-marker';
+      
+      return L.divIcon({
+        className: className,
+        iconSize: [24, 24],
+        html: `<div style="line-height: 24px;">●</div>`
+      });
+    }
+    
+    // Add locations to the map
+    locations.forEach(location => {
+      const marker = L.marker([location.lat, location.lng], {
+        icon: createCustomIcon(location.type)
+      }).bindPopup(`
+        <div class="custom-popup-content">
+          <div class="location-name">${location.name}</div>
+          <div class="location-type">${location.type}</div>
+          <div class="location-details">${location.details}</div>
+        </div>
+      `);
+      
+      locationsLayer.addLayer(marker);
+    });
+    
+    // Simplified zoning districts
+    const zoningDistricts = [
+      {
+        name: "Residential",
+        color: "#76A5AF",
+        opacity: 0.6,
+        coordinates: [
+          [40.1250, -75.5180],
+          [40.1350, -75.5180],
+          [40.1350, -75.5080],
+          [40.1250, -75.5080]
+        ]
+      },
+      {
+        name: "Commercial",
+        color: "#F4B942",
+        opacity: 0.6,
+        coordinates: [
+          [40.1290, -75.5220],
+          [40.1350, -75.5220],
+          [40.1350, -75.5180],
+          [40.1290, -75.5180]
+        ]
+      },
+      {
+        name: "Historic",
+        color: "#BA5536",
+        opacity: 0.6,
+        coordinates: [
+          [40.1300, -75.5150],
+          [40.1330, -75.5150],
+          [40.1330, -75.5120],
+          [40.1300, -75.5120]
+        ]
+      },
+      {
+        name: "Industrial",
+        color: "#7E4EAC",
+        opacity: 0.6,
+        coordinates: [
+          [40.1250, -75.5080],
+          [40.1300, -75.5080],
+          [40.1300, -75.5020],
+          [40.1250, -75.5020]
+        ]
+      }
+    ];
+    
+    // Add zoning districts to the map
+    zoningDistricts.forEach(district => {
+      const polygon = L.polygon(district.coordinates, {
+        color: district.color,
+        fillColor: district.color,
+        fillOpacity: district.opacity,
+        weight: 2
+      }).bindPopup(`
+        <div class="custom-popup-content">
+          <div class="location-name">${district.name} District</div>
+          <div class="location-details">Click for zoning regulations and information</div>
+        </div>
+      `);
+      
+      zoningLayer.addLayer(polygon);
+    });
+    
+    // Sample utility service areas (simplified)
+    const utilityAreas = [
+      {
+        name: "Water Service Area",
+        color: "#3498db",
+        opacity: 0.4,
+        coordinates: [
+          [40.1200, -75.5300],
+          [40.1400, -75.5300],
+          [40.1400, -75.5000],
+          [40.1200, -75.5000]
+        ]
+      },
+      {
+        name: "Sewer Service Area",
+        color: "#8e44ad",
+        opacity: 0.4,
+        coordinates: [
+          [40.1190, -75.5310],
+          [40.1410, -75.5310],
+          [40.1410, -75.4990],
+          [40.1190, -75.4990]
+        ]
+      }
+    ];
+    
+    // Add utility areas to the map
+    utilityAreas.forEach(area => {
+      const polygon = L.polygon(area.coordinates, {
+        color: area.color,
+        fillColor: area.color,
+        fillOpacity: area.opacity,
+        weight: 2
+      }).bindPopup(`
+        <div class="custom-popup-content">
+          <div class="location-name">${area.name}</div>
+          <div class="location-details">This area is served by Phoenixville Borough utilities.</div>
+        </div>
+      `);
+      
+      utilitiesLayer.addLayer(polygon);
+    });
+    
+    // Sample permit data
+    const recentPermits = [
+      {lat: 40.1305, lng: -75.5155, address: "123 Main St", type: "Building", issued: "2023-11-15"},
+      {lat: 40.1320, lng: -75.5160, address: "456 Bridge St", type: "Renovation", issued: "2023-12-02"},
+      {lat: 40.1290, lng: -75.5130, address: "789 Church St", type: "Electrical", issued: "2024-01-10"}
+    ];
+    
+    // Add permits to the map
+    recentPermits.forEach(permit => {
+      const marker = L.circleMarker([permit.lat, permit.lng], {
+        radius: 8,
+        fillColor: "#f1c40f",
+        color: "#000",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8
+      }).bindPopup(`
+        <div class="custom-popup-content">
+          <div class="location-name">${permit.address}</div>
+          <div class="location-type">Permit Type: ${permit.type}</div>
+          <div class="location-details">Issued: ${permit.issued}</div>
+        </div>
+      `);
+      
+      permitsLayer.addLayer(marker);
+    });
+    
+    // Add legend for zoning
+    const zoningLegend = L.control({position: 'bottomright'});
+    zoningLegend.onAdd = function (map) {
+      const div = L.DomUtil.create('div', 'legend');
+      div.innerHTML = '<h4>Zoning Districts</h4>';
+      
+      zoningDistricts.forEach(district => {
+        div.innerHTML += `
+          <div class="legend-item">
+            <div class="legend-color" style="background-color: ${district.color}"></div>
+            <div class="legend-label">${district.name}</div>
+          </div>
+        `;
+      });
+      
+      return div;
+    };
+    
+    // Add legend for utilities
+    const utilitiesLegend = L.control({position: 'bottomright'});
+    utilitiesLegend.onAdd = function (map) {
+      const div = L.DomUtil.create('div', 'legend');
+      div.innerHTML = '<h4>Utility Services</h4>';
+      
+      utilityAreas.forEach(area => {
+        div.innerHTML += `
+          <div class="legend-item">
+            <div class="legend-color" style="background-color: ${area.color}"></div>
+            <div class="legend-label">${area.name}</div>
+          </div>
+        `;
+      });
+      
+      return div;
+    };
+    
+    // Layer toggling
+    document.querySelectorAll('.map-button').forEach(button => {
+      button.addEventListener('click', function() {
+        // Remove active class from all buttons
+        document.querySelectorAll('.map-button').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        
+        // Add active class to clicked button
+        this.classList.add('active');
+        
+        // Get the layer to show
+        const layerToShow = this.getAttribute('data-layer');
+        
+        // Update info text
+        document.getElementById('layer-info').textContent = `Currently showing: ${this.textContent}`;
+        
+        // Hide all layers
+        map.removeLayer(locationsLayer);
+        map.removeLayer(zoningLayer);
+        map.removeLayer(utilitiesLayer);
+        map.removeLayer(permitsLayer);
+        
+        // Remove any active legends
+        if (map.hasLayer(zoningLegend)) {
+          map.removeControl(zoningLegend);
+        }
+        if (map.hasLayer(utilitiesLegend)) {
+          map.removeControl(utilitiesLegend);
+        }
+        
+        // Show selected layer
+        if (layerToShow === 'locations') {
+          map.addLayer(locationsLayer);
+        } else if (layerToShow === 'zoning') {
+          map.addLayer(zoningLayer);
+          zoningLegend.addTo(map);
+        } else if (layerToShow === 'utilities') {
+          map.addLayer(utilitiesLayer);
+          utilitiesLegend.addTo(map);
+        } else if (layerToShow === 'permits') {
+          map.addLayer(permitsLayer);
+        }
+      });
+    });
+    
+    // Set the initial layer based on URL parameter
+    document.querySelector(`.map-button[data-layer="${initialLayer}"]`).click();
+
+    
+    // Add a border highlight to Phoenixville Borough boundaries
+    const boroughBoundary = L.polygon([
+      [40.1190, -75.5310],
+      [40.1410, -75.5310], 
+      [40.1410, -75.4990],
+      [40.1190, -75.4990]
+    ], {
+      color: '#fff',
+      weight: 2,
+      opacity: 0.8,
+      fill: false,
+      dashArray: '5, 5'
+    }).addTo(map);
+  </script>
+</body>
+</html>

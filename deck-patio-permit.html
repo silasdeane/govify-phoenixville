@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/static/theme.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deck/Patio Permit Application</title>
+    <style>
+        /* Modern, clean styling */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #333;
+            line-height: 1.5;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .borough-logo {
+            width: 80px;
+            height: auto;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        
+        .form-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0 0 10px;
+        }
+        
+        .form-subtitle {
+            font-size: 16px;
+            color: #666;
+            margin: 0;
+        }
+        
+        .form-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2a5885;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+        
+        .form-group {
+            flex: 1 1 250px;
+            margin-bottom: 10px;
+        }
+        
+        label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .checkbox-group label {
+            margin-bottom: 0;
+        }
+        
+        .checkbox-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        
+        .note-box {
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-left: 4px solid #f0ad4e;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .fee-box {
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-left: 4px solid #5bc0de;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .signature-section {
+            margin-top: 30px;
+        }
+        
+        .submit-section {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn-submit {
+            background-color: #2a5885;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-submit:hover {
+            background-color: #214a75;
+        }
+        
+        .form-error {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        input.error, textarea.error {
+            border-color: #dc3545;
+        }
+        
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 20px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .form-group {
+                flex: 1 1 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-header">
+            <img src="/static/phoenixville-logo.png.jpeg" alt="Borough of Phoenixville" class="borough-logo">
+            <h1 class="form-title">Deck/Patio Permit Application</h1>
+            <p class="form-subtitle">Borough of Phoenixville, 351 Bridge Street, Phoenixville, PA 19460</p>
+            <p class="form-subtitle">Phone: (610) 933-8801 | www.phoenixville.org</p>
+        </div>
+        
+        <form id="deck-patio-permit-form">
+            <!-- Application Type Section -->
+            <div class="form-section">
+                <div class="checkbox-row">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="residential" name="applicationType" value="residential" checked>
+                        <label for="residential">Residential</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="commercial" name="applicationType" value="commercial">
+                        <label for="commercial">Commercial</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Property Information Section -->
+            <div class="form-section">
+                <h2 class="section-title">Property Information</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="propertyAddress">Property Address</label>
+                        <input type="text" id="propertyAddress" name="propertyAddress" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ownerName">Owner Name</label>
+                        <input type="text" id="ownerName" name="ownerName" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="tel" id="phone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="cell">Cell</label>
+                        <input type="tel" id="cell" name="cell">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="taxParcelNumber">Tax Parcel Number</label>
+                        <input type="text" id="taxParcelNumber" name="taxParcelNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="zoningDistrict">Zoning District</label>
+                        <input type="text" id="zoningDistrict" name="zoningDistrict">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Applicant Information Section -->
+            <div class="form-section">
+                <h2 class="section-title">Applicant Information</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="applicantName">Name</label>
+                        <input type="text" id="applicantName" name="applicantName" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="applicantAddress">Address</label>
+                        <input type="text" id="applicantAddress" name="applicantAddress" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="applicantPhone">Phone</label>
+                        <input type="tel" id="applicantPhone" name="applicantPhone">
+                    </div>
+                    <div class="form-group">
+                        <label for="applicantCell">Cell</label>
+                        <input type="tel" id="applicantCell" name="applicantCell">
+                    </div>
+                    <div class="form-group">
+                        <label for="applicantEmail">Email</label>
+                        <input type="email" id="applicantEmail" name="applicantEmail">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contractor Information Section -->
+            <div class="form-section">
+                <h2 class="section-title">Contractor Information</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="companyName">Company Name</label>
+                        <input type="text" id="companyName" name="companyName">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="primaryContact">Primary Contact</label>
+                        <input type="text" id="primaryContact" name="primaryContact">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="contractorAddress">Address</label>
+                        <input type="text" id="contractorAddress" name="contractorAddress">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="contractorPhone">Phone</label>
+                        <input type="tel" id="contractorPhone" name="contractorPhone">
+                    </div>
+                    <div class="form-group">
+                        <label for="contractorCell">Cell</label>
+                        <input type="tel" id="contractorCell" name="contractorCell">
+                    </div>
+                    <div class="form-group">
+                        <label for="contractorEmail">Email</label>
+                        <input type="email" id="contractorEmail" name="contractorEmail">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="paHicExp">PA HIC# and Exp Date</label>
+                        <input type="text" id="paHicExp" name="paHicExp">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Type of Work Section -->
+            <div class="form-section">
+                <h2 class="section-title">Type of Work to be Performed</h2>
+                <div class="checkbox-row">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="newBuilding" name="workType" value="newBuilding">
+                        <label for="newBuilding">New Building</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="renovation" name="workType" value="renovation">
+                        <label for="renovation">Renovation</label>
+                    </div>
+                </div>
+                <div class="checkbox-row">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="addition" name="workType" value="addition">
+                        <label for="addition">Addition</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="demolition" name="workType" value="demolition">
+                        <label for="demolition">Demolition</label>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="totalSquareFeet">Total Square Feet of Scope</label>
+                        <input type="number" id="totalSquareFeet" name="totalSquareFeet">
+                    </div>
+                    <div class="form-group">
+                        <label for="totalValue">Total Value of Scope</label>
+                        <input type="number" id="totalValue" name="totalValue">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stormwater Management Section -->
+            <div class="form-section">
+                <div class="note-box">
+                    <strong>Note:</strong> The Borough of Phoenixville Stormwater Management Ordinance (SWMO) regulates activities involving regulated impervious surface &gt;500 SF or earth disturbance &gt;5,000 SF. Regulated Impervious Surface is defined as the cumulative existing and proposed impervious surface installed after 9/9/2014.
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="totalProposedImpervious">Total Proposed Impervious Surface (A)</label>
+                        <input type="number" id="totalProposedImpervious" name="totalProposedImpervious" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="existingImpervious">Existing Impervious Surface installed after 9/9/2014 (B)</label>
+                        <input type="number" id="existingImpervious" name="existingImpervious" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="regulatedImpervious">Regulated Impervious Surface (A) + (B) = (C)</label>
+                        <input type="number" id="regulatedImpervious" name="regulatedImpervious" readonly>
+                    </div>
+                </div>
+                <div class="note-box" style="border-left-color: #d9534f;">
+                    <strong>Important:</strong> If (C) exceeds 500 square feet, a separate Stormwater Management Permit is required.
+                </div>
+            </div>
+            
+            <!-- Project Description Section -->
+            <div class="form-section">
+                <h2 class="section-title">Project Description</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <textarea id="projectDescription" name="projectDescription" rows="4" required></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Certification Section -->
+            <div class="form-section signature-section">
+                <div class="note-box">
+                    <p>I hereby certify that the proposed work is authorized by the owner of record and that I have been authorized by the owner to make this application as the authorized agent and we agree to conform to all applicable laws of this jurisdiction. Construction shall comply with all Borough Codes and the most current ICC Building Codes as adopted by the Commonwealth of Pennsylvania. I have examined this application, its requirements and to my knowledge and belief, is a true, correct and complete application.</p>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="signature">Applicant's Signature</label>
+                        <input type="text" id="signature" name="signature" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signatureDate">Date</label>
+                        <input type="text" id="signatureDate" name="signatureDate" required value="">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Fee Information Section -->
+            <div class="fee-box">
+                <p><strong>Please be advised:</strong> As per the Borough of Phoenixville Schedule of Fees, the applicant shall be responsible for any additional Consultant Fees above and beyond the collected inspection fees on an "as invoiced" basis that may not be able to be ascertained at the submission of the application, and are due upon pick up.</p>
+            </div>
+            
+            <!-- Noise Ordinance Notice -->
+            <div class="note-box" style="margin-top: 20px;">
+                <p><strong>Borough of Phoenixville Code Chapter 6, Part 403.2.B:</strong> No person shall operate or permit the operation of any tools or equipment used in construction operations, drilling or demolition or other work or in the sweeping of parking lots in Residential District and in areas adjacent to Residential Districts between the hours of 9:00 p.m. of one day and 7:00 a.m. of the following day on weekdays and Saturdays or at any time on Sundays or legal holidays such that the sound therefrom creates unreasonable noise.</p>
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="submit-section">
+                <button type="submit" class="btn-submit">Submit Application</button>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date in signature date field
+            const today = new Date();
+            const formattedDate = today.toLocaleDateString('en-US', {
+                month: '2-digit',
+                day: '2-digit',
+                year: 'numeric'
+            });
+            document.getElementById('signatureDate').value = formattedDate;
+            
+            // Handle impervious surface calculations
+            const totalProposedInput = document.getElementById('totalProposedImpervious');
+            const existingImperviousInput = document.getElementById('existingImpervious');
+            const regulatedImperviousInput = document.getElementById('regulatedImpervious');
+            
+            function calculateRegulatedImpervious() {
+                const totalProposed = parseFloat(totalProposedInput.value) || 0;
+                const existingImpervious = parseFloat(existingImperviousInput.value) || 0;
+                const regulatedImpervious = totalProposed + existingImpervious;
+                
+                regulatedImperviousInput.value = regulatedImpervious;
+                
+                // Show warning if regulated impervious exceeds 500 sq ft
+                const warningBox = document.querySelector('.note-box[style*="border-left-color: #d9534f"]');
+                if (regulatedImpervious > 500) {
+                    warningBox.style.backgroundColor = '#f8d7da';
+                    warningBox.style.color = '#721c24';
+                } else {
+                    warningBox.style.backgroundColor = '#f8f8f8';
+                    warningBox.style.color = 'inherit';
+                }
+            }
+            
+            // Calculate on input change
+            totalProposedInput.addEventListener('input', calculateRegulatedImpervious);
+            existingImperviousInput.addEventListener('input', calculateRegulatedImpervious);
+            
+            // Ensure only one checkbox is selected for application type
+            const residentialCheckbox = document.getElementById('residential');
+            const commercialCheckbox = document.getElementById('commercial');
+            
+            residentialCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    commercialCheckbox.checked = false;
+                }
+            });
+            
+            commercialCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    residentialCheckbox.checked = false;
+                }
+            });
+            
+            // Form submission handling
+            const form = document.getElementById('deck-patio-permit-form');
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate form fields
+                if (!validateForm()) {
+                    return;
+                }
+                
+                // Collect form data
+                const formData = new FormData(form);
+                const formObject = {};
+                
+                formData.forEach((value, key) => {
+                    formObject[key] = value;
+                });
+                
+                // In a real implementation, you would send this data to your server
+                // For now, just show success message
+                showSubmissionResult(formObject);
+            });
+            
+            function validateForm() {
+                // Reset previous error states
+                document.querySelectorAll('.form-error').forEach(el => el.remove());
+                document.querySelectorAll('input.error, textarea.error').forEach(el => {
+                    el.classList.remove('error');
+                });
+                
+                let isValid = true;
+                const requiredFields = [
+                    'propertyAddress', 'ownerName', 'taxParcelNumber', 
+                    'applicantName', 'applicantAddress', 'totalProposedImpervious',
+                    'existingImpervious', 'projectDescription', 'signature'
+                ];
+                
+                // Check required fields
+                requiredFields.forEach(field => {
+                    const input = document.getElementById(field);
+                    if (!input.value.trim()) {
+                        markFieldAsError(input, 'This field is required');
+                        isValid = false;
+                    }
+                });
+                
+                // Check if either residential or commercial is checked
+                if (!residentialCheckbox.checked && !commercialCheckbox.checked) {
+                    const container = document.querySelector('.checkbox-row');
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'form-error';
+                    errorMsg.textContent = 'Please select either Residential or Commercial';
+                    container.appendChild(errorMsg);
+                    isValid = false;
+                }
+                
+                // Check if at least one work type is selected
+                const workTypeSelected = document.querySelectorAll('input[name="workType"]:checked').length > 0;
+                if (!workTypeSelected) {
+                    const container = document.querySelectorAll('.checkbox-row')[2];
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'form-error';
+                    errorMsg.textContent = 'Please select at least one type of work';
+                    container.appendChild(errorMsg);
+                    isValid = false;
+                }
+                
+                return isValid;
+            }
+            
+            function markFieldAsError(field, message) {
+                field.classList.add('error');
+                
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'form-error';
+                errorMsg.textContent = message;
+                
+                field.parentNode.appendChild(errorMsg);
+            }
+            
+            function showSubmissionResult(formData) {
+                // Hide the form
+                form.style.display = 'none';
+                
+                // Create success message
+                const successMessage = document.createElement('div');
+                successMessage.className = 'submission-result';
+                successMessage.innerHTML = `
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#28a745" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <h2 style="color: #28a745; margin-top: 15px;">Application Submitted Successfully</h2>
+                        <p>Your permit application has been submitted. Please keep the reference number for your records.</p>
+                        <p><strong>Reference Number:</strong> PX-${Date.now().toString().substr(-6)}</p>
+                    </div>
+                    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                        <h3 style="margin-top: 0;">Next Steps</h3>
+                        <ol style="padding-left: 20px;">
+                            <li>Your application will be reviewed by the Borough staff within 15 days for residential permits.</li>
+                            <li>You may be contacted if additional information is needed.</li>
+                            <li>Upon approval, you will receive your permit via email.</li>
+                            <li>Payment will be collected before the permit is issued.</li>
+                        </ol>
+                        <p>You should expect to hear back within 15 business days for residential permits.</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <button id="printReceipt" style="background-color: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-right: 10px;">Print Receipt</button>
+                        <button id="newApplication" style="background-color: #2a5885; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">New Application</button>
+                    </div>
+                `;
+                
+                // Add the success message to the form container
+                form.parentNode.appendChild(successMessage);
+                
+                // Add event listeners to the buttons
+                document.getElementById('printReceipt').addEventListener('click', function() {
+                    window.print();
+                });
+                
+                document.getElementById('newApplication').addEventListener('click', function() {
+                    // Show the form again
+                    form.style.display = 'block';
+                    // Reset the form
+                    form.reset();
+                    // Remove the success message
+                    successMessage.remove();
+                    // Set current date in signature date field
+                    document.getElementById('signatureDate').value = formattedDate;
+                    // Reset impervious surface calculation
+                    calculateRegulatedImpervious();
+                });
+            }
+            
+            // Initial calculation
+            calculateRegulatedImpervious();
+        });
+    </script>
+</body>
+</html>

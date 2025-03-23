@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Water Bill Payment</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #1e1e1e;
+      color: #e0e0e0;
+      font-family: 'Inter', sans-serif;
+    }
+    .payment-container {
+      max-width: 700px;
+      margin: 0 auto;
+      background-color: #292929;
+      border: 1px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .header {
+      background-color: #5686f5;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    .header h2 {
+      margin: 0;
+      font-weight: 600;
+    }
+    .step {
+      display: none;
+      padding: 20px;
+    }
+    .step.active {
+      display: block;
+    }
+    .progress-bar {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px 40px;
+      background-color: #333;
+      margin-bottom: 20px;
+    }
+    .progress-step {
+      position: relative;
+      text-align: center;
+      color: #9ca3af;
+    }
+    .progress-step.active {
+      color: #5686f5;
+    }
+    .step-number {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #444;
+      color: #9ca3af;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 8px;
+    }
+    .progress-step.active .step-number {
+      background-color: #5686f5;
+      color: white;
+    }
+    .form-label {
+      color: #e0e0e0;
+      margin-bottom: 0.5rem;
+    }
+    .form-control {
+      background-color: #333;
+      border-color: #444;
+      color: #e0e0e0;
+    }
+    .form-control:focus {
+      background-color: #3a3a3a;
+      color: #e0e0e0;
+      border-color: #5686f5;
+      box-shadow: 0 0 0 0.25rem rgba(86, 134, 245, 0.25);
+    }
+    .btn-primary {
+      background-color: #5686f5;
+      border-color: #5686f5;
+    }
+    .btn-outline-secondary {
+      border-color: #666;
+      color: #e0e0e0;
+    }
+    .payment-method {
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+    .payment-method:hover {
+      background-color: #333;
+      border-color: #5686f5;
+    }
+    .payment-method-icon {
+      font-size: 1.5rem;
+      margin-right: 15px;
+    }
+    .confirmation-box {
+      background-color: #333;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .success-icon {
+      width: 60px;
+      height: 60px;
+      background-color: rgba(86, 134, 245, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 1.8rem;
+      color: #5686f5;
+    }
+    .info-alert {
+      background-color: rgba(86, 134, 245, 0.1);
+      border: 1px solid rgba(86, 134, 245, 0.2);
+      color: #9ca3af;
+      border-radius: 6px;
+      padding: 12px;
+      margin: 15px 0;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="payment-container">
+    <div class="header">
+      <h2>Phoenixville Water Bill Payment</h2>
+      <p class="mb-0">Secure payment portal for Borough residents</p>
+    </div>
+    
+    <div class="progress-bar">
+      <div class="progress-step active" id="step1-indicator">
+        <div class="step-number">1</div>
+        <div class="step-name">Payment Method</div>
+      </div>
+      <div class="progress-step" id="step2-indicator">
+        <div class="step-number">2</div>
+        <div class="step-name">Account</div>
+      </div>
+      <div class="progress-step" id="step3-indicator">
+        <div class="step-number">3</div>
+        <div class="step-name">Payment</div>
+      </div>
+      <div class="progress-step" id="step4-indicator">
+        <div class="step-number">4</div>
+        <div class="step-name">Confirmation</div>
+      </div>
+    </div>
+    
+    <!-- Step 1: Payment Method -->
+    <div class="step active" id="step1">
+      <h3 class="mb-4">Select Payment Method</h3>
+      <div class="payment-method" onclick="goToStep(2)">
+        <div class="payment-method-icon">💳</div>
+        <div>
+          <div class="fw-bold">Credit/Debit Card</div>
+          <div class="text-muted small">Visa, Mastercard, Discover</div>
+        </div>
+      </div>
+      <div class="payment-method" onclick="goToStep(2)">
+        <div class="payment-method-icon">🏦</div>
+        <div>
+          <div class="fw-bold">Bank Account</div>
+          <div class="text-muted small">Direct from checking account</div>
+        </div>
+      </div>
+      <div class="info-alert">
+        <strong>💡 Did you know?</strong><br>
+        You can set up automatic payments for your water bill by calling the Borough office at (610) 933-8801.
+      </div>
+    </div>
+    
+    <!-- Step 2: Account Information -->
+    <div class="step" id="step2">
+      <h3 class="mb-4">Account Information</h3>
+      <form>
+        <div class="mb-3">
+          <label for="accountNumber" class="form-label">Water Account Number</label>
+          <input type="text" class="form-control" id="accountNumber" required>
+          <div class="form-text">Your account number can be found on your water bill</div>
+        </div>
+        <div class="mb-3">
+          <label for="amount" class="form-label">Payment Amount ($)</label>
+          <input type="number" class="form-control" id="amount" step="0.01" min="0.01" required>
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email Receipt</label>
+          <input type="email" class="form-control" id="email" required>
+          <div class="form-text">We'll send your receipt to this email address</div>
+        </div>
+        <div class="d-flex justify-content-between mt-4">
+          <button type="button" class="btn btn-outline-secondary" onclick="goToStep(1)">Back</button>
+          <button type="button" class="btn btn-primary" onclick="goToStep(3)">Continue</button>
+        </div>
+      </form>
+    </div>
+    
+    <!-- Step 3: Payment Details -->
+    <div class="step" id="step3">
+      <h3 class="mb-4">Payment Details</h3>
+      <form>
+        <div class="mb-3">
+          <label for="cardName" class="form-label">Name on Card</label>
+          <input type="text" class="form-control" id="cardName" required>
+        </div>
+        <div class="mb-3">
+          <label for="cardNumber" class="form-label">Card Number</label>
+          <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456" required>
+        </div>
+        <div class="row mb-3">
+          <div class="col">
+            <label for="expiry" class="form-label">Expiration Date</label>
+            <input type="text" class="form-control" id="expiry" placeholder="MM/YY" required>
+          </div>
+          <div class="col">
+            <label for="cvv" class="form-label">CVV</label>
+            <input type="text" class="form-control" id="cvv" placeholder="123" required>
+          </div>
+        </div>
+        
+        <div class="info-alert">
+          This is a demo. No actual payment will be processed and no personal information will be stored.
+        </div>
+        
+        <div class="d-flex justify-content-between mt-4">
+          <button type="button" class="btn btn-outline-secondary" onclick="goToStep(2)">Back</button>
+          <button type="button" class="btn btn-primary" id="submitBtn" onclick="processPayment()">Submit Payment</button>
+        </div>
+      </form>
+    </div>
+    
+    <!-- Step 4: Confirmation -->
+    <div class="step" id="step4">
+      <div class="text-center">
+        <div class="success-icon">✓</div>
+        <h3 class="mb-3">Payment Successful!</h3>
+        <p class="text-muted mb-4">Your payment has been processed successfully.</p>
+        
+        <div class="confirmation-box">
+          <h4 class="mb-3">Transaction Details</h4>
+          <div class="row mb-2">
+            <div class="col-5 text-muted">Account Number:</div>
+            <div class="col-7" id="confirm-account">-</div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-5 text-muted">Amount Paid:</div>
+            <div class="col-7" id="confirm-amount">-</div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-5 text-muted">Payment Method:</div>
+            <div class="col-7">Credit/Debit Card</div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-5 text-muted">Transaction ID:</div>
+            <div class="col-7" id="transaction-id">-</div>
+          </div>
+          <div class="row">
+            <div class="col-5 text-muted">Date:</div>
+            <div class="col-7" id="transaction-date">-</div>
+          </div>
+        </div>
+        
+        <p class="text-muted mb-4" id="confirmation-email">A receipt has been sent to your email address.</p>
+        
+        <button type="button" class="btn btn-primary" onclick="resetForm()">Make Another Payment</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Navigate between steps
+    function goToStep(step) {
+      // Hide all steps
+      document.querySelectorAll('.step').forEach(el => {
+        el.classList.remove('active');
+      });
+      
+      // Update progress indicators
+      document.querySelectorAll('.progress-step').forEach(el => {
+        el.classList.remove('active');
+      });
+      
+      // Show the selected step
+      document.getElementById('step' + step).classList.add('active');
+      
+      // Update progress indicators up to current step
+      for (let i = 1; i <= step; i++) {
+        document.getElementById('step' + i + '-indicator').classList.add('active');
+      }
+    }
+    
+    // Process payment simulation
+    function processPayment() {
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Processing...';
+      
+      // Get form values to display in confirmation
+      const accountNumber = document.getElementById('accountNumber').value;
+      const amount = document.getElementById('amount').value;
+      const email = document.getElementById('email').value;
+      
+      // Simulate processing delay
+      setTimeout(() => {
+        // Set confirmation values
+        document.getElementById('confirm-account').innerText = accountNumber;
+        document.getElementById('confirm-amount').innerText = '$' + parseFloat(amount).toFixed(2);
+        document.getElementById('confirmation-email').innerText = 'A receipt has been sent to ' + email;
+        document.getElementById('transaction-id').innerText = 'PHX-' + Math.floor(Math.random() * 1000000);
+        document.getElementById('transaction-date').innerText = new Date().toLocaleDateString();
+        
+        // Go to confirmation step
+        goToStep(4);
+        
+        // Reset button state
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Submit Payment';
+      }, 1500);
+    }
+    
+    // Reset form to start over
+    function resetForm() {
+      document.querySelectorAll('form').forEach(form => form.reset());
+      goToStep(1);
+    }
+  </script>
+</body>
+</html>

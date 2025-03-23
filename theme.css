@@ -1,0 +1,12 @@
+:root {
+    --bg-dark: #0d1b1a;
+    --bg-darker: #0a1514;
+    --panel-bg: #111f1e;
+    --panel-hover: #152725;
+    --accent-color: #4cc2a1;
+    --accent-hover: #5adab6;
+    --border-color: #152725;
+    --text-light: #e0e0e0;
+    --text-muted: #9ca3af;
+    --text-dark: #1a1a1a;
+  }
